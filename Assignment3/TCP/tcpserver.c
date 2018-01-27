@@ -179,13 +179,33 @@ int main(int argc, char **argv) {
           printf("%s\n",code );
           if(strcmp(code,"Hello\0")==0)                                   // Hello message received
           {
-            printf("%d\n",filesize );
+            printf("filesize received: %d\n",filesize );
+            FILE *received_file;
+            received_file = fopen("test.txt", "ab");
+            int remain_data = filesize,len;
+            char buffer[BUFSIZE];
+          
+            // while (((len = recv(childfd, buffer, BUFSIZE, 0)) > 0) && (remain_data > 0))
+            // {
+            //         printf("INSIDE\n");
+            //         fwrite(buffer, sizeof(char), len, received_file);
+            //         remain_data -= len;
+            //         fprintf(stdout, "Receive %d bytes and we hope :- %d bytes\n", len, remain_data);
+            // }
+              char recvBuff[1024];
+              int bytesReceived;
+                      while((bytesReceived = read(childfd, recvBuff, 1024)) > 0)
+              { 
+                 // sz++;
+                  //gotoxy(0,4);
+                  //printf("Received: %llf Mb",(sz/1024));
+            
+                  fwrite(recvBuff, 1,bytesReceived,received_file);
+                  // printf("%s \n", recvBuff);
+              }
+            fclose(received_file);
+
           }
-
-          n = write(childfd, buf, strlen(buf));
-          if (n < 0)
-            error("ERROR writing to socket");
-
           close(childfd);
   }
 }
