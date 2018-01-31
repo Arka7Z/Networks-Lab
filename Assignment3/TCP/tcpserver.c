@@ -159,13 +159,13 @@ int main(int argc, char **argv) {
           /*
            * gethostbyaddr: determine who sent the message
            */
-          hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,sizeof(clientaddr.sin_addr.s_addr), AF_INET);
-          if (hostp == NULL)
-            error("ERROR on gethostbyaddr");
+          //hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,sizeof(clientaddr.sin_addr.s_addr), AF_INET);
+          //if (hostp == NULL)
+          //  error("ERROR on gethostbyaddr");
           hostaddrp = inet_ntoa(clientaddr.sin_addr);
           if (hostaddrp == NULL)
             error("ERROR on inet_ntoa\n");
-          printf("server established connection with %s (%s)\n",hostp->h_name, hostaddrp);
+          //printf("server established connection with %s (%s)\n",hostp->h_name, hostaddrp);
 
 
           bzero(buf, BUFSIZE);
@@ -204,11 +204,12 @@ int main(int argc, char **argv) {
             n=send(childfd,acknowledge,sizeof(acknowledge),0);
             printf("filesize received: %d\n",filesize );
             FILE *received_file;
-            received_file = fopen(filename, "ab");
+            received_file = fopen(filename, "wb");
             int remain_data = filesize,len;
             char buffer[BUFSIZE];
 
-              char recvBuff[1024];
+              char recvBuff[BUFSIZE];
+              bzero(recvBuff,BUFSIZE);
               int bytesReceived;
               while((bytesReceived = read(childfd, recvBuff, 1024)) > 0)
               { 
@@ -217,8 +218,11 @@ int main(int argc, char **argv) {
                   if(bytesReceived<1024)
                   {	
                   	printf("Server completed receiving the file\n");
+                  	bzero(recvBuff,BUFSIZE);
                   	break;
+
                   }
+                  bzero(recvBuff,BUFSIZE);
               }
             fclose(received_file);
 
