@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
             /* If read was success, send data. */
             if(nread > 0)
             {
+                
                 write(sockfd, buff, nread);
             }
             if (nread < 1024)
