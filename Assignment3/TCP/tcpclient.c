@@ -13,6 +13,7 @@
 #include <netdb.h>
 #include <sys/stat.h>
 #include <sys/sendfile.h>
+#include <openssl/md5.h>
 #define BUFSIZE 1024
 
 /*
@@ -111,9 +112,46 @@ int main(int argc, char **argv) {
                             break;
             }
         }
-    bzero(buf, BUFSIZE);
+    bzero(server_response, BUFSIZE);
 
-    close(sockfd);
     fclose(fp);
+    int fd=open(buf, "r");
+
+    MD5_CTX c;
+    char buffer[BUFSIZE];
+    ssize_t bytes;
+    char out[MD5_DIGEST_LENGTH];
+
+    MD5_Init(&c);
+    bytes=read(fd, buffer, BUFSIZE);
+    while(bytes > 0)
+    {
+        MD5_Update(&c, buffer, bytes);
+        bytes=read(fd, buffer, BUFSIZE);
+    }
+
+    MD5_Final(out, &c);
+
+    close(fd);
+    char received_checksum[MD5_DIGEST_LENGTH];
+    n=recv(sockfd,received_checksum,sizeof(received_checksum),0);
+    int same=1;
+    int i;
+    for(i=0; i<MD5_DIGEST_LENGTH; i++)
+    {
+        if(received_checksum[i]!=(out[i]))
+            same=0;
+    }
+    if(same==1)
+    {
+        printf("MD5 Matched\n");
+    }
+    else
+    {
+        printf("MD5 Not Matched\n");
+    }
+    close(fd);
+    close(sockfd);
+
     return 0;
 }
