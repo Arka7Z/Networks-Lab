@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/stat.h>
+#include <openssl/md5.h>
 #define BUFSIZE 1024
 
 #if 0
@@ -54,6 +55,26 @@ void error(char *msg) {
   perror(msg);
   exit(1);
 }
+
+// void compute_checksum(unsigned char out[MD5_DIGEST_LENGTH])
+// {
+// 	int n;
+//     MD5_CTX c;
+//     char buf[512];
+//     ssize_t bytes;
+//     //unsigned char out[MD5_DIGEST_LENGTH];
+
+//     MD5_Init(&c);
+//     bytes=read(STDIN_FILENO, buf, 512);
+//     while(bytes > 0)
+//     {
+//         MD5_Update(&c, buf, bytes);
+//         bytes=read(STDIN_FILENO, buf, 512);
+//     }
+
+//     MD5_Final(out, &c);
+
+// }
 
 int main(int argc, char **argv) {
   int parentfd; /* parent socket */
@@ -193,10 +214,37 @@ int main(int argc, char **argv) {
               { 
 
                   fwrite(recvBuff, 1,bytesReceived,received_file);
+                  if(bytesReceived<1024)
+                  {	
+                  	printf("Server completed receiving the file\n");
+                  	break;
+                  }
               }
             fclose(received_file);
 
+            int fd=open(filename, "rb");
+		    MD5_CTX c;
+		    char buf[1024];
+		    ssize_t bytes;
+		    char out[MD5_DIGEST_LENGTH];
+
+		    MD5_Init(&c);
+		    bytes=read(fd, buf, 1024);
+		    while(bytes > 0)
+		    {
+		        MD5_Update(&c, buf, bytes);
+		        bytes=read(fd, buf, 1024);
+		    }
+
+		    MD5_Final(out, &c);
+		    //printf("236 after final out %d\n",MD5_DIGEST_LENGTH);
+		    close(fd);
+
+		    n=send(childfd,out,sizeof(out),0);
+		    close(fd);
+		    close(childfd);
+
           }
-          close(childfd);
+          
   }
 }
