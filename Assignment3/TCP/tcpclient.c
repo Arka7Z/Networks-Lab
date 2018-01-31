@@ -64,16 +64,16 @@ int main(int argc, char **argv) {
     char Hello_Message[3*BUFSIZE],hello[BUFSIZE];
     int filesize;
     strcpy(hello,"Hello\0");
-    /* get message line from the user */
+    
+    /* get File name from the user */
     printf("Please File name: ");
     bzero(buf, BUFSIZE);
     scanf("%s",buf);
-    //char* fd="/home/cules/Downloads/Socket/Socket/TCP/hello.txt";
     struct stat st;
     stat(buf, &st);
     filesize = st.st_size;
     FILE* fp = fopen(buf, "rb");
-    printf("%d filesize\n",filesize );
+
     sprintf(Hello_Message,"%s,%s,%d",hello,buf,filesize);
     n=send(sockfd,Hello_Message,sizeof(Hello_Message),0);
     if (n < 0)
@@ -82,51 +82,32 @@ int main(int argc, char **argv) {
     off_t offset=NULL;
           /* Sending file data */
     
+    char server_response[BUFSIZE];
+    n=recv(sockfd,server_response,BUFSIZE,0);
+    printf("Server response: %s\n",server_response );
 
-    char buffer[BUFSIZE];
     int read_bytes;
-    // while( (read_bytes = read(fd, buffer, BUFSIZE)) > 0 )
-    //  {
-    //      if( (sent_bytes = send(sockfd, buffer, read_bytes, 0))< read_bytes )
-    //      {
-    //      perror("send error");
-    //      return -1;
-    //      }
-    //
-    //  }
-    //  fclose(fd);
-    // while (((sent_bytes = sendfile(sockfd, fd, &offset, BUFSIZE)) ) && (remain_data > 0))
-    //       {
-    //               printf("INSIDE for loop client\n" );
-    //               fprintf(stdout, "1. Server sent %d bytes from file's data, offset is now : %d and remaining data = %d\n", sent_bytes, offset, remain_data);
-    //               remain_data -= sent_bytes;
-    //
-    //               fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %d and remaining data = %d\n", sent_bytes, offset, remain_data);
-    //       }
-    /* print the server's reply */
 
     while(1)
         {
-            /* First read file in chunks of 256 bytes */
+            /* First read file in chunks of BUFSIZE bytes */
             unsigned char buff[1024]={0};
-            int nread = fread(buff,1,1024,fp);
-            //printf("Bytes read %d \n", nread);        
+            int nread = fread(buff,1,1024,fp);       
 
             /* If read was success, send data. */
             if(nread > 0)
             {
-                //printf("Sending \n");
                 write(sockfd, buff, nread);
             }
             if (nread < 1024)
             {
                 if (feof(fp))
             		{
-                                printf("End of file\n");
+                                printf("File Sent\n");
             		
             		}
                             if (ferror(fp))
-                                printf("Error reading\n");
+                                printf("Error Sending file\n");
                             break;
             }
         }
