@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     bzero((char *) &serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     bcopy((char *)server->h_addr,
-	  (char *)&serveraddr.sin_addr.s_addr, server->h_length);
+      (char *)&serveraddr.sin_addr.s_addr, server->h_length);
     serveraddr.sin_port = htons(portno);
 
     /* connect: create a connection with the server */
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
           /* Sending file data */
     
     char server_response[BUFSIZE];
-    n=recv(sockfd,server_response,BUFSIZE,0);
+    n=recv(sockfd,server_response,sizeof(server_response),0);
     printf("Server response: %s\n",server_response );
 
     int read_bytes;
@@ -104,10 +104,10 @@ int main(int argc, char **argv) {
             if (nread < 1024)
             {
                 if (feof(fp))
-            		{
+                    {
                                 printf("File Sent\n");
-            		
-            		}
+                    
+                    }
                             if (ferror(fp))
                                 printf("Error Sending file\n");
                             break;

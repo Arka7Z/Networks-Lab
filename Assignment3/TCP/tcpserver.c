@@ -204,26 +204,34 @@ int main(int argc, char **argv) {
             n=send(childfd,acknowledge,sizeof(acknowledge),0);
             printf("filesize received: %d\n",filesize );
             FILE *received_file;
-            received_file = fopen(filename, "wb");
+            received_file = fopen(filename, "ab");
             int remain_data = filesize,len;
             char buffer[BUFSIZE];
 
               char recvBuff[BUFSIZE];
               bzero(recvBuff,BUFSIZE);
               int bytesReceived;
-              while((bytesReceived = read(childfd, recvBuff, 1024)) > 0)
+
+              while( remain_data>0)
               { 
 
+                  if (remain_data>=1024)
+                    (bytesReceived = read(childfd, recvBuff, 1024));
+                  else if (remain_data<1024 && remain_data>0)
+                    (bytesReceived = read(childfd, recvBuff, remain_data));
+                  else 
+                    break;
                   fwrite(recvBuff, 1,bytesReceived,received_file);
-                  if(bytesReceived<1024)
-                  {	
-                  	printf("Server completed receiving the file\n");
-                  	bzero(recvBuff,BUFSIZE);
-                  	break;
+                  remain_data-=bytesReceived;
+                  // if(bytesReceived<1024)
+                  // {	
+                  // 	printf("Server completed receiving the file\n");
 
-                  }
-                  bzero(recvBuff,BUFSIZE);
+                  // 	break;
+
+                  // }
               }
+              printf("Server completed receiving the file\n");
             fclose(received_file);
 
             int fd=open(filename, "rb");
