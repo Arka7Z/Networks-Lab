@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <openssl/md5.h>
 #define BUFSIZE 1024
 
 /*
@@ -264,34 +265,30 @@ int main(int argc, char **argv) {
     fclose(received_file);
     printf("file received \n");
 
+    int fd=open(filename, "rb");
+    MD5_CTX c;
+    char buf[1024];
+    ssize_t bytes;
+    char out[MD5_DIGEST_LENGTH];
+    MD5_Init(&c);
+    bytes=read(fd, buf, 1024);
+    while(bytes > 0)
+    {
+      MD5_Update(&c, buf, bytes);
+      bytes=read(fd, buf, 1024);
+    }
 
+    MD5_Final(out, &c);
+    //printf("236 after final out %d\n",MD5_DIGEST_LENGTH);
+    close(fd);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    n=sendto(sockfd,out,sizeof(out),0,&clientaddr,clientlen);
+    if(n<0)
+      error("ERROR on sending the checksum\n");
+    close(fd);
 
 
     sleep(5);
-
-
-
-
-
     
     //////////////////////////////////////////////////////
     // bzero(buf, BUFSIZE);

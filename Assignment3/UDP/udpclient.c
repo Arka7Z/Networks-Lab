@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 #include <errno.h>
-
+#include <openssl/md5.h>
 #define BUFSIZE 1024
 
 
@@ -89,10 +89,15 @@ int main(int argc, char **argv)
 
     memset(buf,'\0',sizeof(buf));
 
+
     printf("Please enter the file name: ");
     
 
     scanf("%s",buf);
+
+    char *filename[1000];
+    strcpy(filename,buf);
+
     struct stat st;
     stat(buf, &st);
     filesize = st.st_size;
@@ -277,6 +282,70 @@ int main(int argc, char **argv)
     // printf("Echo from server: %s", buf);
 
     fclose(fp);
+
+
+
+    int fd=open(buf, "r");
+
+    MD5_CTX c;
+    char buffer[BUFSIZE];
+    ssize_t bytes;
+    char out[MD5_DIGEST_LENGTH];
+
+    MD5_Init(&c);
+    bytes=read(fd, buffer, BUFSIZE);
+    while(bytes > 0)
+    {
+        MD5_Update(&c, buffer, bytes);
+        bytes=read(fd, buffer, BUFSIZE);
+    }
+
+    MD5_Final(out, &c);
+
+    close(fd);
+    char received_checksum[MD5_DIGEST_LENGTH];
+    n=recvfrom(sockfd,received_checksum,sizeof(received_checksum),0,&serveraddr,&serverlen);
+    if(n<0)
+        error("ERROR in receiving the checksum \n");
+    int same=1;
+    int i;
+    for(i=0; i<MD5_DIGEST_LENGTH; i++)
+    {
+        if(received_checksum[i]!=(out[i]))
+            same=0;
+    }
+    if(same==1)
+    {
+        printf("MD5 Matched\n");
+    }
+    else
+    {
+        printf("MD5 Not Matched\n");
+    }
+    close(fd);
+    close(sockfd);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     return 0;
 }
