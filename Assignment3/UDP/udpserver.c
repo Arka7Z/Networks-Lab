@@ -190,11 +190,6 @@ int main(int argc, char **argv) {
     {
 
 
-
-
-
-
-
       if(recvfrom(sockfd,recv_buf , BUFSIZE , 0, &clientaddr, &clientlen)<0)
         error("ERROR on receiving data from client \n");
 

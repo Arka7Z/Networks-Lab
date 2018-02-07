@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
     scanf("%s",buf);
 
-    char *filename[1000];
+    char filename[1000];
     strcpy(filename,buf);
 
     struct stat st;
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 
         if(strcmp(buf,"hello_ACK") == 0)
         {
-            printf("\n hello ack received \n" );
+            printf("\n hello ACK received \n" );
             break;
         }
  
