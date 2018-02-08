@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     struct hostent *server;
     char *hostname;
     char buf[BUFSIZE];
-
+    int retransmitted = 0;
     /* check command line arguments */
     if (argc != 3) 
     {
@@ -251,6 +251,7 @@ int main(int argc, char **argv)
                 else
                 {
                     printf("ACK not received for sequence number= %d , continuing \n",seq_number);
+                    retransmitted++;
                     continue;
                 }
             }
@@ -260,6 +261,7 @@ int main(int argc, char **argv)
                 if (feof(fp))
                 {
                     printf("File Sent\n");       
+                    printf("Number of retransmitted packets = %d\n",retransmitted);
                 }
                 if (ferror(fp))
                     printf("Error Sending file\n");
