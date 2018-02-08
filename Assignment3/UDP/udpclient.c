@@ -134,7 +134,7 @@ int main(int argc, char **argv)
             error("ERROR in hello ACK");
         }
 
-        printf("\n received something , %s \t ",buf);
+        // printf("\n received something , %s \t ",buf);
         for(int k=0;k<10;k++)
         {
             printf("%c ,",buf[k]);
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                    printf("ERROR ACK recvfrom error at seq_number = %d",seq_number);
+                    printf("ERROR in ACK received error at seq_number = %d",seq_number);
                     exit(-1);
                 }
             }

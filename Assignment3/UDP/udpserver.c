@@ -130,18 +130,18 @@ int main(int argc, char **argv) {
 
       if(i==0)
       {
-        printf("code decoded \t");
+        //printf("code decoded \t");
         strcpy(code,tokens);
       }
       
       else if(i==1)
       {
-        printf("filename decoded\t" );
+        // printf("filename decoded\t" );
         strcpy(filename,tokens);
       }
       else if(i==2)
       {
-        printf("filesize decoded\n" );
+        // printf("filesize decoded\n" );
         strcpy(filesize_string,tokens);
       }
       
@@ -152,7 +152,10 @@ int main(int argc, char **argv) {
     filesize=atoi(filesize_string);
           
     if(strcmp(code,"hello")!=0)
+    {
+      printf("\n Not a new Connection Request, restarting\n");
       continue;
+    }
 
     bzero(ack,sizeof(ack));
     strcpy(ack,"hello_ACK\0");
