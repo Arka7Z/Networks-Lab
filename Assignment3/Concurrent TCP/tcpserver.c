@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
 
                   // }
               }
-              printf("Server completed receiving the file\n");
+              printf("Server completed receiving the file, in process id = %d\n",getpid());
             fclose(received_file);
 
             int fd=open(filename, "rb");
