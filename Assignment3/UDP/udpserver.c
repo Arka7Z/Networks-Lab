@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
         sprintf(ack,"%s,%d","ACK",recv_seq_num);
 
         //for forcefully causing retransmission
-        // if(recv_seq_num==6)
+        //if(recv_seq_num==6)
         //   sleep(5);
 
         if(sendto(sockfd,ack, BUFSIZE, 0, &clientaddr, clientlen)<0)

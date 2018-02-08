@@ -135,10 +135,10 @@ int main(int argc, char **argv)
         }
 
         // printf("\n received something , %s \t ",buf);
-        for(int k=0;k<10;k++)
-        {
-            printf("%c ,",buf[k]);
-        }
+        // for(int k=0;k<10;k++)
+        // {
+        //     printf("%c ,",buf[k]);
+        // }
         printf("\n");
 
         if(strcmp(buf,"hello_ACK") == 0)
