@@ -226,6 +226,19 @@ int main(int argc, char **argv)
       if(alarm_fired)
 	{
 	  int diff=baseptr-currptr;
+
+
+	  if(diff>0 && diff <=w_size)
+	  {
+	  	i = w_size - diff;
+	  
+	  }
+	  else
+	  {
+	  	i=w_size;
+	  }
+	  
+	  /*
 	  if(diff==3)
 	    i=0;
 	  else if(diff==2)
@@ -234,6 +247,7 @@ int main(int argc, char **argv)
 	    i=0;
 	  else
 	    i=3;
+	  */
 	  //for(;i<3;i++)
 	  for(;i<w_size;i++)
 	    {
