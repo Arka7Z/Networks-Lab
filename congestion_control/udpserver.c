@@ -92,6 +92,8 @@ int main(int argc, char **argv)
        * main loop: wait for a datagram, then echo it
        */
       clientlen = sizeof(clientaddr);
+      double drop_prob=0.003;
+      srand(time(0));
       while (1) 
     {
 
@@ -170,7 +172,7 @@ int main(int argc, char **argv)
 
             int_to_char num_char;
             char packet_buf[BUFSIZE];
-            int recv_seq_num,exp_seq_num=1,last_in_order,remain_data = filesize;
+            int recv_seq_num,exp_seq_num=1,last_in_order=0,remain_data = filesize;
             FILE *received_file;
             received_file = fopen(filename, "ab");
 
@@ -183,8 +185,18 @@ int main(int argc, char **argv)
             {
 
 
+                      double r = (((double) rand()) / (RAND_MAX));
+                      printf(" R is %f\n",r);
+                        if (r<= drop_prob && (exp_seq_num!=1 ||exp_seq_num!=2) )
+                            {
+                            printf("DROPPING PACKETS\n");
+                            sleep(2);
+                            continue;
+                            }
+
                       if(recvfrom(sockfd,recv_buf , BUFSIZE , 0, &clientaddr, &clientlen)<0)
                             error("ERROR on receiving data from client \n");
+
 
                                                                   // getting the sequence number
                       num_char.bytes[0]=recv_buf[0];
@@ -202,10 +214,11 @@ int main(int argc, char **argv)
 
                       bytes_received=num_char.no;                 // BYTES RECIEVED
 
-                      if(recv_seq_num==4)                          // JUST CHECK RETRANSMIT IS CORRECT
-                        sleep(3);
+                      //if(recv_seq_num==4)                          // JUST CHECK RETRANSMIT IS CORRECT
+                        //sleep(3);
 
-                      if(recv_seq_num==exp_seq_num)
+
+                      if(recv_seq_num==exp_seq_num )
                       {
                             printf("packet received with sequence number = %d and bytes received = %d \n",recv_seq_num,bytes_received);
 
@@ -220,7 +233,7 @@ int main(int argc, char **argv)
                             exp_seq_num++;
 
                       }
-                      else if(recv_seq_num!=exp_seq_num)
+                      else if(recv_seq_num!=exp_seq_num )
                       {
                             memset(ack,'\0',sizeof(ack));
                             sprintf(ack,"%s,%d","ACK",last_in_order);
@@ -235,7 +248,7 @@ int main(int argc, char **argv)
                       }
                       else
                       {
-                            printf("received sequence number (%d) doesn't match with expected sequence number (%d) , continuing \n",recv_seq_num,exp_seq_num);
+                            printf("in else, received sequence number (%d) doesn't match with expected sequence number (%d) , continuing \n",recv_seq_num,exp_seq_num);
                             continue;
                       }
                       
